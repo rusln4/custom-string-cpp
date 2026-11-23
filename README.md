@@ -1,127 +1,50 @@
-# Custom String Implementation in C++
+# String
 
-![C++](https://img.shields.io/badge/C++-17-blue?logo=cplusplus)
-![CMake](https://img.shields.io/badge/CMake-Build-green?logo=cmake)
-![GoogleTest](https://img.shields.io/badge/GoogleTest-Testing-orange)
-![Status](https://img.shields.io/badge/Status-Educational_Project-purple)
+Напишите класс `String` - упрощенный аналог библиотечного `std::string`.
 
-## 📖 About the Project
+В этой задаче запрещено пользоваться какими-либо стандартными контейнерами. Выделения памяти нужно делать вручную. Разрешается подключать только `<iostream>` и `<cstring>` (можно подключить `<algorithm>` для использования `std::fill` и `std::copy`). (Для знатоков: `<memory>` подключать тоже нельзя!)
 
-**Custom String** is an educational C++ project implementing a simplified version of `std::string` from scratch.
+Необходимо поддержать следующий функционал:
+- Конструктор от C-style строки (`const char*`).
+- Конструктор от двух параметров: число `n` и символ `c` - создает строку из `n` копий символа `c`.
+- Конструктор по умолчанию, копирующий конструктор и оператор присваивания. Оператор присваивания должен корректно обрабатывать присваивание самому себе.
+- Оператор `==`, позволяющий проверять строки на совпадение, а также операторы `<`, `>`, `<=` и `>=` для лексикографического сравнения строк.
+- Оператор получения элемента по индексу (`[]`), корректно работающий как для константных, так и для неконстантных строк.
+- Метод `Length()`, возвращающий размер строки. А также методы `Size()` и `Capacity()`, возвращающие соответственно размер и текущую емкость. Терминирующий символ `\0` ни там, ни там не учитывается.
+- Методы `PushBack(char)` и `PopBack()`. Амортизированное время работы `PushBack` должно быть $O(1)$. Метод `PopBack` должен работать за гарантированное $O(1)$, то есть не перевыделять память.
+- Методы `Front()` и `Back()`, возвращающие ссылку на начальный и на последний символы строки, соответственно. Должны корректно работать и для константных, и для неконстантных строк.
+- Оператор `+=`, позволяющий добавить к строке символ или другую строку. Добавление символа должно работать за амортизированное $O(1)$. 
+- Оператор `+`, позволяющий складывать строки с символами, символы со строками и строки со строками.
+- Методы `Find(substring)` и `Rfind(substring)`, позволяющие найти самое левое и самое правое вхождение подстроки `Substring` в данную строку. Возвращают индекс найденного вхождения. Если вхождений не найдено, нужно вернуть `Length()` (фиктивный индекс).
+- Метод `Substr(start, count)`, возвращающий подстроку начиная с индекса `start` и состоящую из `count` символов.
+- Метод `Empty()`, проверяющий, пуста ли строка. 
+- Метод `Clear()`, позволяющий очистить строку. В нем делается только обнуление размера, но не освобождение памяти.
+- Метод `ShrinkToFit()`, освобождающий лишнюю использованную память.
+- Операторы вывода в поток (`<<`) и ввода из потока (`>>`).
+- Метод `Data()`, возвращающий указатель на начало строки. Должен корректно работать как для константных, так и для неконстантных строк.
 
-The class provides dynamic memory management, string manipulation, operator overloading, and basic substring operations without using standard containers.
+Дополнительные замечания по задаче:
+- Строка должна заканчиваться символом `\0` (стандартный `std::string` тоже обладает этим свойством). Это нужно, чтобы в случае использования `Data()` можно было корректно работать с полученной сишной строкой.
+- Количество вызовов `new` нужно стараться свести к минимуму. В частности, в операторе `+=` нельзя добавлять символ за символом, надо сразу выделить память на всю добавляемую строку. Аналогично в методе `substr`. В операторе присваивания, если текущая строка длиннее присваиваемой, стоит обойтись без перевыделения памяти.
+- Для заполнения строки символами, а также для копирования строк не надо использовать цикл с поэлементным присваиванием, это будет работать очень долго. Стоит использовать `memset` и `memcpy`, а еще лучше $-$ `std::fill` и `std::copy`.
+- В этой задаче все тесты приватные. Собственные тесты вы можете писать в файле [test.cpp](./tests/test.cpp). Для их запуска нужно собрать и запустить обычный таргет публичных тестов (`test_string`). Также для удобства отладки есть файл [main.cpp](./play/main.cpp), аналогично предыдущей задаче.
 
-The project focuses on understanding how strings work internally in C++.
-
-## ✨ Features
-
-### Constructors and Memory Management
-- Default, C-string, fill, and copy constructors
-- Deep copying and copy assignment
-- Dynamic memory allocation using `new[]` and `delete[]`
-- Automatic capacity growth
-- Memory optimization with `ShrinkToFit()`
-
-### String Operations
-- `PushBack()` / `PopBack()` — add or remove characters
-- `Clear()` — clear string contents
-- `Size()` / `Length()` — get string length
-- `Capacity()` — get allocated capacity
-- `Empty()` — check whether a string is empty
-- `Front()` / `Back()` — access first and last characters
-- `Data()` / `operator[]` — direct character access
-
-### Operators
-- `+` and `+=` — string concatenation
-- `=` — copy assignment
-- `==`, `<`, `>`, `<=`, `>=` — string comparisons
-- `<<` and `>>` — stream input and output
-
-### Substring Operations
-- `Find()` — find the first occurrence
-- `Rfind()` — find the last occurrence
-- `Substr()` — extract a substring
-
-## 💻 Usage Example
-
-Create two strings:
-
-`String first("Hello");`
-
-`String second("World");`
-
-Concatenate them:
-
-`String result = first + ' ' + second;`
-
-Print the result:
-
-`std::cout << result << '\n';`
-
-**Output:**
-
-`Hello World`
-
-### Building the Alphabet
-
-Another example demonstrates dynamic string growth using `PushBack()`.
-
-Start with an empty string:
-
-`String alphabet;`
-
-Append characters from `'a'` to `'z'` using a loop, then output the string with `std::cout`.
-
-**Result:**
-
-`abcdefghijklmnopqrstuvwxyz`
-
-## 📁 Project Structure
-
-- `string/string.hpp` — class declarations and public interface
-- `string/src/string.cpp` — method implementations
-- `string/tests/test.cpp` — GoogleTest unit tests
-- `string/play/main.cpp` — examples and experiments
-- `string/CMakeLists.txt` — build configuration
-
-## 🧪 Testing
-
-The project uses **GoogleTest** for unit testing and **CMake** for building.
-
-From the root directory of the original CMake project:
-
-1. Build the test target: `cmake --build build --target test_string`
-2. Run the tests: `./build/test_string`
-
-Tests cover constructors, copying, character operations, comparisons, and other functionality.
-
-## 🛠 Tech Stack
-
-- **Language:** C++17
-- **Build System:** CMake
-- **Testing:** GoogleTest
-- **Compiler:** Clang / GCC
-
-## 🎯 Learning Objectives
-
-This project was developed to practice:
-
-- Object-oriented programming (OOP)
-- Pointers and references
-- Dynamic memory allocation
-- Constructors and destructors
-- Deep copy semantics
-- Operator overloading
-- Const correctness
-- Manual resource management
-- Unit testing
-
-## 📝 Notes
-
-This is an educational implementation intended to demonstrate the internals of a string class.
-
-It is not designed as a complete replacement for the standard `std::string`.
-
----
-
-**Built with C++ to understand what happens behind the scenes.**
+Экспресс-гайд по написанию тестов в GTest:
+- Каждый тест оформляется в виде 
+```
+TEST(НазваниеГруппыТестов, НазваниеТеста) {
+    // создание объектов и различные проверки
+}
+```
+- Для проверок можно использовать, например, следующие хелперы:
+    - `ASSERT_EQ(l, r)` - проверка, что `l == r`
+    - `ASSERT_NEQ(l, r)` - проверка, что `l != r`
+    - `ASSERT_LT(l, r)` - проверка, что `l < r`
+    - `ASSERT_LE(l, r)` - проверка, что `l <= r`
+    - `ASSERT_GT(l, r)` - проверка, что `l > r`
+    - `ASSERT_GE(l, r)` - проверка, что `l >= r`
+    - `ASSERT_TRUE(expr)` - проверка, что `expr == true`
+    - `ASSERT_FALSE(expr)` - проверка, что `expr == false`
+- Полный список хелперов можно найти в [документации GTest](https://google.github.io/googletest/).
+- Для примера написан [один публичный тест](./tests/test.cpp).
+- Пример тестов можно также посмотреть в [публичных тестах](../stack/tests/test.cpp) задачи `Stack`. В них используется вспомогательный класс, поэтому тесты начинаются со слова `TEST_F`. В этой задаче вспомогательного класса нет, поэтому `_F` не нужен.
